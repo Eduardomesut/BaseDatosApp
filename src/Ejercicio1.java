@@ -174,10 +174,10 @@ public class Ejercicio1 {
                     consultaProyectos(sc);
 
                 } else if (num == 4) {
-                    // detallesProyecto(sc);
+                    detallesProyecto(sc);
 
                 } else if (num == 5) {
-                    // consultaVehiculos(sc);
+                    consultaVehiculos(sc);
 
                 } else if (num == 6) {
                     // masPersonal(sc);
@@ -310,11 +310,62 @@ public class Ejercicio1 {
     }
     
     public static void consultaProyectos(Scanner sc){
-        
-        
-        
-        
-        
+        System.out.println("----------LISTA DE PROYECTOS----------");
+
+        String sql = "select codigo, nombre FROM PROYECTO;";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", ""); PreparedStatement stm = con.prepareStatement(sql); ResultSet rs = stm.executeQuery();) {
+            while (rs.next()) {
+
+                System.out.println(rs.getInt(1) + "---" + rs.getString(2));
+            }
+            System.out.println("-----------------------------------------------------------");
+
+        } catch (Exception e) {
+
+            System.out.println("Errorazo " + e.getClass().getSimpleName() + ": " + e.getCause());
+        }
+
     }
 
+    public static void detallesProyecto(Scanner sc){
+        System.out.println("-----------DETALES DE PROYECTO--------------");
+        int id;
+        System.out.print("Selecciona un id de un proyecto: ");
+        id = Integer.parseInt(sc.nextLine());
+        String queryPro = "SELECT e.nombre, e.dni from EMPLEADO as e JOIN ASIGNACION as a ON e.id = a.id WHERE a.codigo = ?;";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", ""); PreparedStatement stm = con.prepareStatement(queryPro);
+              ) {
+            stm.setInt(1,id);
+            ResultSet rs = stm.executeQuery();
+            System.out.println("----------EMPLEADOS PROYECTO " + id + "----------");
+            while (rs.next()) {
+
+                System.out.println(rs.getString(1) + "---" + rs.getString(2));
+            }
+            System.out.println("-----------------------------------------------------------");
+
+        } catch (Exception e) {
+
+            System.out.println("Errorazo " + e.getClass().getSimpleName() + ": " + e.getCause());
+        }
+    }
+    public static void consultaVehiculos(Scanner sc){
+        System.out.println("----------LISTA DE VEHICULOS----------");
+        String sql = "select v.matricula, v.marca, v.modelo, e.nombre FROM VEHICULO AS v LEFT JOIN EMPLEADO AS e ON v.persona = e.id;";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", ""); PreparedStatement stm = con.prepareStatement(sql); ResultSet rs = stm.executeQuery();) {
+            while (rs.next()) {
+
+                System.out.println(rs.getString(1) + "---" + rs.getString(2)+ "---" + rs.getString(3)+ "---" + rs.getString(4));
+            }
+            System.out.println("-----------------------------------------------------------");
+
+        } catch (Exception e) {
+
+            System.out.println("Errorazo " + e.getClass().getSimpleName() + ": " + e.getCause());
+        }
+
+    }
 }
