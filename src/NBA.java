@@ -274,14 +274,69 @@ public class NBA {
 
     public static void consultaJugadorEquipo(Scanner sc) {
         System.out.println("--------CONSULTA DE JUGADORES-----------");
-        //Nombre de equipo, Ciudad del equipo, Conferencia, División
+        int c = 0;
         String nombreEquipo;
         String ciudad;
         String conferencia;
         String division;
         System.out.print("Nombre del equipo: ");
         nombreEquipo = sc.nextLine();
-        System.out.println("Nombre ciudad: ");
+        System.out.print("Nombre ciudad: ");
+        ciudad = sc.nextLine();
+        System.out.print("Conferencia: ");
+        conferencia = sc.nextLine();
+        System.out.print("División: ");
+        division = sc.nextLine();
+        String sql = "SELECT j.codigo, j.Nombre,j.Nombre_equipo FROM jugadores as j JOIN equipos as e ON j.Nombre_equipo = e.nombre WHERE 1 = 1 ";
+        if (nombreEquipo != null && !nombreEquipo.equals("")) {
+            sql = sql + " AND e.Nombre LIKE ? ";
+        }
+        if (ciudad != null && !ciudad.equals("")) {
+            sql = sql + " AND e.Ciudad LIKE ? ";
+        }
+        if (conferencia != null && !conferencia.equals("")) {
+            sql = sql + " AND e.Conferencia LIKE ? ";
+        }
+        if (division != null && !division.equals("")) {
+            sql = sql + " AND e.Division LIKE ? ";
+        }
+        ResultSet rse = null;
+        try(Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/NBA", "root", "");
+        PreparedStatement pre = con.prepareStatement(sql)){
+            if (nombreEquipo != null && !nombreEquipo.equals("")) {
+                c++;
+                pre.setString(c, nombreEquipo+ "%");
+            }
+            if (ciudad != null && !ciudad.equals("")) {
+                c++;
+                pre.setString(c, ciudad+ "%");
+            }
+            if (conferencia != null && !conferencia.equals("")) {
+                c++;
+                pre.setString(c, conferencia+ "%");
+            }
+            if (division != null && !division.equals("")) {
+                c++;
+                pre.setString(c, division+ "%");
+            }
+            rse = pre.executeQuery();
+            while (rse.next()){
+
+                System.out.println(rse.getString(1) + "----" + rse.getString(2) + "----" + rse.getString(3));
+
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (rse != null){
+                try {
+                    rse.close();
+                } catch (SQLException e) {
+                    System.out.println("Error al cerrar el ResulSet");
+                }
+            }
+        }
 
     }
 
